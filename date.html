@@ -1,6 +1,5 @@
 <script>
   function GetDateObj() {
-    
     this.getDateObj = (start, end) => {
       const res = [];
       this.startY = start.getFullYear();
@@ -67,10 +66,39 @@
       d.setDate(d.getDate() - 1);
       return d.getDate();
     };
+
+    getDateObj2 = function(start, end) {
+      //这个是伪代码
+      let res = {};
+      let yearsObj = {};
+      let curDate = start;
+      while (start.before(end)) {
+        curDate = start.add("day", 1);
+        let cutYears = curDate.getFullYear();
+        let cutMonth = curDate.getMonth();
+        let cutDay = curDate.getUTCDate();
+        if (!yearsObj[cutYears]) {
+          yearsObj[cutYears] = {
+            lable: "years",
+            value: cutYears,
+            childs: [
+              {
+                lable: "month",
+                value: cutMonth,
+                childs: [{ lable: "day", value: cutDay, childs: null }]
+              }
+            ]
+          };
+        } else {
+          // yearsObj[cutYears].childs[cutMonth].push(....);
+          // yearsObj[cutYears].childs[cutMonth][cutDay].childs.push(....);
+        }
+      }
+    };
   }
 
   const res = new GetDateObj();
-  console.time("time");
+  console.time("run time");
   console.log(res.getDateObj(new Date("2010-01-10"), new Date("2020-10-08")));
-  console.timeEnd("time");
+  console.timeEnd("run time");
 </script>
