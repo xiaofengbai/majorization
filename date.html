@@ -1,0 +1,76 @@
+<script>
+  function GetDateObj() {
+    
+    this.getDateObj = (start, end) => {
+      const res = [];
+      this.startY = start.getFullYear();
+      this.endY = end.getFullYear();
+      this.startM = start.getMonth() + 1;
+      this.endM = end.getMonth() + 1;
+      this.startD = start.getUTCDate();
+      this.endD = end.getUTCDate();
+
+      for (let index = this.startY; index <= this.endY; index++) {
+        res.push({
+          lable: "years",
+          value: index,
+          childs: this.getMonth(index)
+        });
+      }
+      return res;
+    };
+
+    this.getMonth = function(y, startMonth = 1, endMonth = 12) {
+      if (this.startY === this.endY) {
+        startMonth = this.startM;
+        endMonth = this.endM;
+      }
+      if (y === this.endY) {
+        endMonth = this.endM;
+      }
+      var res = [];
+      for (let index = startMonth; index <= endMonth; index++) {
+        res.push({
+          lable: "month",
+          value: index,
+          childs: this.getDay(y, index)
+        });
+      }
+      return res;
+    };
+
+    this.getDay = function(y, m, startDay = 1) {
+      let dayLength = this.getMonthLength(`${y} ${m}`);
+      if (y == this.startY && m == this.startM) {
+        startDay = this.startD;
+      }
+      if (m == this.endM && y == this.endY) {
+        dayLength = this.endD;
+      }
+      let res = [];
+
+      for (let index = startDay; index <= dayLength; index++) {
+        res.push({
+          lable: "day",
+          value: index,
+          childs: null
+        });
+      }
+
+      return res;
+    };
+
+    this.getMonthLength = function(date) {
+      let d = new Date(date);
+      d.setMonth(d.getMonth() + 1);
+      d.setDate("1");
+      d.setDate(d.getDate() - 1);
+      return d.getDate();
+    };
+  }
+
+  const res = new GetDateObj();
+  console.time("time");
+  console.log(res.getDateObj(new Date("2010-01-10"), new Date("2020-10-08")));
+  console.timeEnd("time");
+</script>
