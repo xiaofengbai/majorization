@@ -127,14 +127,69 @@
       }
       return res;
     };
+
+    this.getDateObj3 = function(start, end) {
+      let startTimes = start.getTime();
+      let endTimes = end.getTime();
+      let res = [];
+      let initYears = null;
+      let initMonth = null;
+      let initDay = null;
+      
+      for (
+        let yearIndex = 0, monthIndex = 0, day = startTimes;
+        day < endTimes;
+        day += 86400000
+      ) {
+        const cutTime = new Date(day);
+        const cutYears = cutTime.getFullYear();
+        const cutMonth = cutTime.getMonth() + 1;
+        const cutDay = cutTime.getUTCDate();
+        if (initYears === cutYears) {
+          if (initMonth === cutMonth) {
+            if (!res[yearIndex - 1].childs[monthIndex - 1].childs) {
+              res[yearIndex - 1].childs[monthIndex - 1].childs = [];
+            }
+            res[yearIndex - 1].childs[monthIndex - 1].childs.push({
+              lable: "day",
+              value: cutDay
+            });
+          } else {
+            initMonth = cutMonth;
+            if (!res[yearIndex - 1].childs) {
+              res[yearIndex - 1].childs = [];
+            }
+            res[yearIndex - 1].childs.push({
+              lable: "month",
+              value: cutMonth,
+              childs: []
+            });
+            monthIndex = monthIndex + 1 > 12 ? 1 : monthIndex + 1;
+          }
+        } else {
+          initYears = cutYears;
+          res.push({
+            lable: "year",
+            value: cutYears,
+            childs: []
+          });
+          yearIndex++;
+        }
+      }
+      console.log(res);
+    };
   }
 
   const res = new GetDateObj();
   console.time("run time");
-  console.log(res.getDateObj(new Date("2010-01-10"), new Date("2020-10-08")));
+  console.log(res.getDateObj(new Date("1949-01-10"), new Date("2020-10-08")));
   console.timeEnd("run time");
 
   console.time("run time1");
-  console.log(res.getDateObj2(moment("2010-01-10"), moment("2020-10-08")));
+  console.log(res.getDateObj2(moment("1949-01-10"), moment("2020-10-08")));
   console.timeEnd("run time1");
+
+  console.time("run time2");
+  console.log(res.getDateObj3(new Date("1949-01-10"), new Date("2020-10-08")));
+  console.timeEnd("run time2");
 </script>
