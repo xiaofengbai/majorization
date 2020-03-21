@@ -1,3 +1,4 @@
+<script src="http://cdn.staticfile.org/moment.js/2.24.0/moment.js"></script>
 <script>
   function GetDateObj() {
     this.getDateObj = (start, end) => {
@@ -67,33 +68,64 @@
       return d.getDate();
     };
 
-    getDateObj2 = function(start, end) {
-      //这个是伪代码
-      let res = {};
+    this.getDateObj2 = function(start, end) {
+      let res = [];
       let yearsObj = {};
       let curDate = start;
-      while (start.before(end)) {
-        curDate = start.add("day", 1);
-        let cutYears = curDate.getFullYear();
-        let cutMonth = curDate.getMonth();
-        let cutDay = curDate.getUTCDate();
+      while (curDate.isBefore(end)) {
+        curDate = curDate.add("day", 1);
+        let cutYears = curDate.year();
+        let cutMonth = curDate.month();
+        let cutDay = curDate.date();
         if (!yearsObj[cutYears]) {
           yearsObj[cutYears] = {
-            lable: "years",
+            lable: "year",
             value: cutYears,
-            childs: [
-              {
+            childs: {
+              [cutMonth + 1]: {
                 lable: "month",
-                value: cutMonth,
-                childs: [{ lable: "day", value: cutDay, childs: null }]
+                value: cutMonth + 1,
+                childs: {
+                  [cutDay]: { lable: "day", value: cutDay, childs: null }
+                }
               }
-            ]
+            }
           };
         } else {
-          // yearsObj[cutYears].childs[cutMonth].push(....);
-          // yearsObj[cutYears].childs[cutMonth][cutDay].childs.push(....);
+          if (!yearsObj[cutYears].childs[cutMonth + 1]) {
+            yearsObj[cutYears].childs[cutMonth + 1] = {
+              lable: "month",
+              value: cutMonth + 1,
+              childs: {}
+            };
+          }
+          if (!yearsObj[cutYears].childs[cutMonth + 1].childs[cutDay]) {
+            yearsObj[cutYears].childs[cutMonth + 1].childs[cutDay] = {
+              lable: "day",
+              value: cutDay,
+              childs: null
+            };
+          }
         }
       }
+      const result = [];
+      this.obj2Array(yearsObj, result);
+      return result;
+    };
+
+    this.obj2Array = function(obj, res = []) {
+      for (const key in obj) {
+        const value = obj[key];
+        res.push({
+          lable: value.lable,
+          value: value.value,
+          childs: []
+        });
+        if (value.childs) {
+          this.obj2Array(value.childs, res[res.length - 1].childs);
+        }
+      }
+      return res;
     };
   }
 
@@ -101,4 +133,8 @@
   console.time("run time");
   console.log(res.getDateObj(new Date("2010-01-10"), new Date("2020-10-08")));
   console.timeEnd("run time");
+
+  console.time("run time1");
+  console.log(res.getDateObj2(moment("2010-01-10"), moment("2020-10-08")));
+  console.timeEnd("run time1");
 </script>
