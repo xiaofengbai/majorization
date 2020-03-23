@@ -56,7 +56,6 @@
           childs: null
         });
       }
-
       return res;
     };
 
@@ -135,7 +134,7 @@
       let initYears = null;
       let initMonth = null;
       let initDay = null;
-      
+
       for (
         let yearIndex = 0, monthIndex = 0, day = startTimes;
         day < endTimes;
@@ -178,6 +177,74 @@
       }
       console.log(res);
     };
+
+    this.isLeapYear = function(year) {
+      let res = false;
+      if (
+        (year % 4 == 0 && year % 100 != 0) ||
+        (year % 100 == 0 && year % 400 == 0)
+      ) {
+        res = true;
+      }
+      return res;
+    };
+
+    this.getDays = function() {
+      const maxDays = [];
+      for (let index = 1; index <= 31; index++) {
+        maxDays.push({
+          lable: `${index} 月`,
+          value: index
+        });
+      }
+      return {
+        "28": maxDays.slice(0, 28),
+        "29": maxDays.slice(0, 29),
+        "30": maxDays.slice(0, 30),
+        "31": maxDays.slice(0, 31)
+      };
+    };
+
+    this.getMonths = function(y, daysMap) {
+      let res = [];
+      const isLeapYear = this.isLeapYear(y);
+      const length31 = [1, 3, 5, 7, 8, 10, 12];
+      for (let index = 1; index <= 12; index++) {
+        if (length31.includes(index)) {
+          res.push({
+            lable: `${index} 月`,
+            value: index,
+            childs: daysMap["31"]
+          });
+        } else if (index === 2) {
+          res.push({
+            lable: `${index} 月`,
+            value: index,
+            childs: isLeapYear ? daysMap["28"] : daysMap["29"]
+          });
+        } else {
+          res.push({
+            lable: `${index} 月`,
+            value: index,
+            childs: daysMap["30"]
+          });
+        }
+      }
+      return res;
+    };
+
+    this.getDateObj4 = function(start, end) {
+      const daysMap = this.getDays();
+      const res = [];
+      for (let index = start; index <= end; index++) {
+        res.push({
+          lable: `${index} 年`,
+          value: index,
+          childs: this.getMonths(index, daysMap)
+        });
+      }
+      return res;
+    };
   }
 
   const res = new GetDateObj();
@@ -192,4 +259,8 @@
   console.time("run time2");
   console.log(res.getDateObj3(new Date("1949-01-10"), new Date("2020-10-08")));
   console.timeEnd("run time2");
+
+  console.time("run time3");
+  console.log(res.getDateObj4(1949, 2020));
+  console.timeEnd("run time3");
 </script>
