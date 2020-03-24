@@ -189,11 +189,11 @@
       return res;
     };
 
-    this.getDays = function() {
+    this.getAllDays = function() {
       const maxDays = [];
       for (let index = 1; index <= 31; index++) {
         maxDays.push({
-          lable: `${index} 月`,
+          lable: `${index} 日`,
           value: index
         });
       }
@@ -205,9 +205,8 @@
       };
     };
 
-    this.getMonths = function(y, daysMap) {
+    this.getAllMonths = function(daysMap) {
       let res = [];
-      const isLeapYear = this.isLeapYear(y);
       const length31 = [1, 3, 5, 7, 8, 10, 12];
       for (let index = 1; index <= 12; index++) {
         if (length31.includes(index)) {
@@ -220,7 +219,7 @@
           res.push({
             lable: `${index} 月`,
             value: index,
-            childs: isLeapYear ? daysMap["28"] : daysMap["29"]
+            childs: []
           });
         } else {
           res.push({
@@ -230,17 +229,23 @@
           });
         }
       }
-      return res;
+      const res1 = res.concat();
+      const res2 = res.concat();
+      res1[0].childs = daysMap["29"];
+      res2[1].childs = daysMap["28"];
+      return [res1, res2];
     };
 
     this.getDateObj4 = function(start, end) {
-      const daysMap = this.getDays();
+      const daysMap = this.getAllDays();
+      const monthMap = this.getAllMonths(daysMap);
       const res = [];
       for (let index = start; index <= end; index++) {
+        const isLeapYear = this.isLeapYear(index);
         res.push({
           lable: `${index} 年`,
           value: index,
-          childs: this.getMonths(index, daysMap)
+          childs: isLeapYear ? monthMap[0] : monthMap[1]
         });
       }
       return res;
