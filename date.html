@@ -268,4 +268,37 @@
   console.time("run time3");
   console.log(res.getDateObj4(1949, 2020));
   console.timeEnd("run time3");
+  
+  /**
+   * parames price价格，p瓶子个数，盖子个数，t啤酒总数
+   * 
+   * **/
+  function getBeer(price = 0, p = 0, g = 0, t = 0) {
+    if (price >= 2) {
+      t = parseInt(price / 2);
+      price = price % 2;
+      p += t;
+      g += t;
+    }
+
+    if (p >= 4) {
+      let tcount = parseInt(p / 4);
+      t += tcount;
+      p = p - 4 * tcount + tcount;
+      g += tcount;
+    }
+    if (g >= 2) {
+      let tcount = parseInt(t / 2);
+      t += tcount;
+      p += tcount;
+      g = g - 2 * tcount + tcount;
+    }
+    if (p >= 4 || g >= 2) {
+      return getBeer(price, p, g, t);
+    } else {
+      return t;
+    }
+  }
+
+  console.log(getBeer(10));
 </script>
